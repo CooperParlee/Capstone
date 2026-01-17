@@ -4,21 +4,26 @@ Author: Cooper Parlee <cooper.parlee@mma.edu>
 Date: 01-02-2026
 Description: Class declaration for a pipe.
 """
-from deviceInline import DeviceInline
-from nodes.node import Node
+from src.devices.deviceInline import DeviceInline
+from src.nodes.node import Node
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.nodes.nodeManager import NodeManager
 
 from math import pi
 from numpy import log10
 
-class Pipe(DeviceInline):
-    dimeter: float = -1.0
+class DevicePipe(DeviceInline):
+    diameter: float = -1.0
     length: float = -1.0
     roughness: float = 0.0 # TODO: figure out units for this
 
-    def __init__ (self, inlet_node : Node, outlet_node : Node, roughness=0, length=0, diameter=0, density=999, viscosity=1.02E-3):
+    def __init__ (self, manager : 'NodeManager', inlet_node : Node, outlet_node : Node, roughness=0, length=0, diameter=0, density=999, viscosity=1.02E-3):
         """Initialize a pipe object with given inlet and outlet nodes and optional roughness, length and diameter values.
 
         Args:
+            manager (NodeManager): NodeManager object to check/add nodes to.
             inlet_node (Node): Inlet node for the system
             outlet_node (Node): Outlet node for the system
             roughness (int, optional): Pipe roughness (m). Defaults to 0.
@@ -29,10 +34,10 @@ class Pipe(DeviceInline):
         """
         self.roughness = roughness
         self.length = length
-        self.dimeter = diameter
+        self.diameter = diameter
         self.density = density
         self.viscosity = viscosity
-        super.__init__(self, inlet_node, outlet_node)
+        super().__init__(manager, inlet_node, outlet_node)
 
     def setRoughness(self, roughness):
         """Set the pipe roughness.
@@ -70,7 +75,8 @@ class Pipe(DeviceInline):
         super().computeDeltas()
 
     def computeMajorLoss (self, Q):
-        """Compute the major friction loss from pipe roughness for a given flow rate, Q (in m^3/s).
+        """Compute the major friction loss from pipe roughness for a given flow rate, Q (in m^3/s). Limitation is that this only works for turbulent
+        flow as it uses the Swamee-Jain equation. Technically, it will work for laminar flow, but it will be very conservative.
 
         Args:
             Q (float): Specified flow rate (m^3/s).
@@ -84,6 +90,8 @@ class Pipe(DeviceInline):
         Re = self.density * v * self.diameter / self.viscosity
 
         # Compute friction factor in that pipe (Swamee-Jain)
+
+        print(f"Diameter: {self.diameter} Re: {Re}")
         f = 0.25 / (log10(self.roughness/(3.7*self.diameter) + 5.74/Re**0.9))**2
 
         # Darcy-Weisbach
