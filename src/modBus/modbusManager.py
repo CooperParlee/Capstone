@@ -9,7 +9,6 @@ from pymodbus.server import StartAsyncTcpServer
 from pymodbus.datastore import ModbusServerContext, ModbusDeviceContext
 from pymodbus.datastore import ModbusSequentialDataBlock
 import asyncio
-from math import floor
 
 from src.devices.device import Device
 
@@ -22,9 +21,9 @@ class ModbusManager:
                 sensor = self.addresses[sensorAddress]
                 for address in sensor.getAddresses():
                     #print(address)
-                    value = floor(sensor.get() * 100 + 100)
+                    value = sensor.get() * 100 + 100
                     print(f"Updating sensor on address {address} to {value}")
-                    server_context.setValues(4, address, [value])
+                    server_context.setValues(4, address, [int(value)])
 
 
     async def run_server(self, address="127.0.0.1", port = 5020):
