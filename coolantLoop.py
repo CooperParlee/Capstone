@@ -20,7 +20,6 @@ rough = 4.6E-5 # (m)
 density = 999 # (kg/m^3)
 viscosity = 1.02E-3 # (m^2/s)
 
-
 #Initialize the node manager
 mgr = NodeManager()
 
@@ -46,12 +45,17 @@ p3 = DevicePipe(mgr, hxheater.getOutlet(), pump.getInlet(), roughness=rough, len
 controlLoop.addDevices([pump, hxcooler, hxheater, p1, p2, p3])
 
 k = controlLoop.getKFactor()
-q = np.linspace(0, 12, 20)
-h = []
+
+# Flow rate in m^3/min
+q = np.linspace(0, 12, 20) 
+mjr = []
 for _q in q:
-    h.append(controlLoop.computeTotalMajor(_q/60))
+    mjr.append(controlLoop.computeTotalMajor(_q/60))
 
 print(k)
 
-plt.plot(q, h)
+plt.plot(q, mjr, label="Major Losses")
+plt.title("Heat Exchanger System Operating Point")
+plt.xlabel(r"Flow Rate ($m^3/min$)")
+plt.ylabel("Head Loss (m)")
 plt.show()
