@@ -4,7 +4,7 @@ Author: Cooper Parlee <cooper.parlee@mma.edu>
 Date: 01-02-2026
 Description: Class declaration for a pipe.
 """
-from src.devices.deviceInline import DeviceInline
+from src.devices import DeviceInline
 from src.nodes.node import Node
 from typing import TYPE_CHECKING
 
@@ -17,7 +17,7 @@ from numpy import log10
 class DevicePipe(DeviceInline):
     diameter: float = -1.0
     length: float = -1.0
-    roughness: float = 0.0 # TODO: figure out units for this
+    roughness: float = 0.0 
 
     def __init__ (self, manager : 'NodeManager', inlet_node : Node, outlet_node : Node, roughness=0, length=0, diameter=0, density=999, viscosity=1.02E-3):
         """Initialize a pipe object with given inlet and outlet nodes and optional roughness, length and diameter values.
@@ -37,7 +37,7 @@ class DevicePipe(DeviceInline):
         self.diameter = diameter
         self.density = density
         self.viscosity = viscosity
-        super().__init__(manager, inlet_node, outlet_node)
+        super().__init__(manager, inlet_node, outlet_node, diameter=diameter)
 
     def setRoughness(self, roughness):
         """Set the pipe roughness.
@@ -98,3 +98,6 @@ class DevicePipe(DeviceInline):
         h_friction = f * (self.length/self.diameter) * (v**2/(2*g))
 
         return h_friction
+
+    def getDiameter(self):
+        return self.diameter

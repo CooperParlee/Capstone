@@ -4,14 +4,18 @@ Author: Cooper Parlee <cooper.parlee@mma.edu>
 Date: 01-12-2026
 Description: Device which takes a control setpoint and changes the inlet and outlet pressures of the adjacent nodes accordingly.
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.nodes.nodeManager import NodeManager
 
-from src.devices.deviceInline import DeviceInline
-from src.nodes.nodeManager import NodeManager
+from src.devices import DeviceInline
 from warnings import warn
 from time import time
 
+
 class DevicePumpBasic (DeviceInline):
-    def __init__(self, manager : NodeManager, inlet=-1, outlet=-1):
+    def __init__(self, manager : "NodeManager", inlet=-1, outlet=-1):
         super().__init__(manager, inlet, outlet)
         self.setpoint = 0
         self.operatingPoint = 0

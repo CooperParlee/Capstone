@@ -5,7 +5,7 @@ Date: 01-02-2026
 Description: File for the class declaration for a generic parallel device, such as a sensor.
 """
 from src.nodes.node import Node
-from src.devices.device import Device
+from src.devices import Device
 
 class DeviceParallel (Device):
     attached_node: Node = -1

@@ -6,8 +6,9 @@ Description: Class declaration for a program that manages the creation of nodes
 and the automatic assignment of node IDs.
 """
 from src.nodes.node import Node
-from src.devices.device import Device
-from src.devices.devicePipe import DevicePipe
+from src.devices import Device
+from src.devices import DevicePipe
+from src.devices import DeviceInline
 from warnings import warn
 
 class NodeManager:
@@ -15,14 +16,18 @@ class NodeManager:
     default_temp = 'undefined'
     default_pressure = 'undefined'
     default_mflow = 'undefined'
+    
 
     nodes: list[Node] = []
 
-    def __init__(self, d_temp='K', d_press='kPa', d_mflow='kg/s'):
+    def __init__(self, d_temp='K', d_press='kPa', d_mflow='kg/s', default_diameter=0.1):
         self.default_temp = d_temp
         self.default_pressure = d_press
         self.default_mflow = d_mflow
+        self.default_diameter = default_diameter
         self.nodes = []
+    def getDefaultDiameter (self):
+        return self.default_diameter
 
     def addNode(self, node=None):
         if(node is None):
@@ -76,9 +81,17 @@ class ControlLoop:
             float: the sum of all of the k factors.
         """
         k = 0
+        diameter = -1
 
         for device in self.devices:
             k += device.getK()
+            if isinstance(device, DevicePipe):
+                if (diameter == -1):
+                    diameter = device.getDiameter()
+                elif (diameter != -1 and diameter != device.getDiameter()):
+                    warn("SIMULATION WARNING: The computeKFactor() method should only be used when the pipes are a constant " \
+                    "diameter. When the diameter is not constant, the velocity term becomes incorrect! Please use " \
+                    "computeTotalMinor() instead.")
 
         self.k = k
 
@@ -94,6 +107,7 @@ class ControlLoop:
             return self.computeKFactor()
         else: 
             return self.k
+    
     def computeTotalMajor (self, Q):
         """Compute the total major loss for all pipes within the system
 
@@ -109,3 +123,18 @@ class ControlLoop:
 
         return headLoss
     
+    def computeTotalMinor (self, Q):
+        """Compute the total minor losses for all pipes and fittings
+
+        Args:
+            Q (float): Specified flow rate (m^3/s)
+        """
+        headLoss = 0
+
+        for device in self.devices:
+            if isinstance(device, DeviceInline):
+                headLoss += device.computeMinorLoss(Q)
+            else:
+                print(f"device was not an inline device {type(device)}")
+        
+        return headLoss

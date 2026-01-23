@@ -20,6 +20,8 @@ class Node:
         self.id = id
         self.startTime = time()
         self.timeSinceStart = 0
+        self.inlet_attached = None
+        self.outlet_attached = None
 
     def getTemperature(self):
         return self.temperature
@@ -51,5 +53,14 @@ class Node:
     def getTimeSinceStart(self):
         return self.timeSinceStart
         
-
+    def attachInlet(self, inletDevice):
+        self.inlet_attached = inletDevice
     
+    def attachOutlet(self, outletDevice):
+        self.outlet_attached = outletDevice
+    
+    def getOutletDevice(self):
+        return self.outlet_attached
+
+    def getInletDevice(self):
+        return self.inlet_attached

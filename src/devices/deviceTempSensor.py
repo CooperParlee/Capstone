@@ -4,7 +4,7 @@ Author: Cooper Parlee <cooper.parlee@mma.edu>
 Date: 01-14-2026
 Description: A basic class for reading temperature sensor values
 """
-from src.devices.deviceParallel import DeviceParallel
+from src.devices import DeviceParallel
 
 class DeviceTempSensor (DeviceParallel):
     def get(self):

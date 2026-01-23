@@ -6,9 +6,9 @@ Description: Unit test that creates a basic cooling water loop with two heat exc
 """
 
 from src.nodes.nodeManager import NodeManager, ControlLoop
-from src.devices.devicePumpBasic import DevicePumpBasic
-from src.devices.devicePipe import DevicePipe
-from src.devices.deviceInline import DeviceInline
+from src.devices import DevicePumpBasic
+from src.devices import DevicePipe
+from src.devices import DeviceInline
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,7 +21,7 @@ density = 999 # (kg/m^3)
 viscosity = 1.02E-3 # (m^2/s)
 
 #Initialize the node manager
-mgr = NodeManager()
+mgr = NodeManager(default_diameter = dia)
 
 # Initialize a control loop w/ default unit settings
 controlLoop = ControlLoop(density=density, viscosity=viscosity)
@@ -49,13 +49,22 @@ k = controlLoop.getKFactor()
 # Flow rate in m^3/min
 q = np.linspace(0, 12, 20) 
 mjr = []
+mnr = []
+
 for _q in q:
     mjr.append(controlLoop.computeTotalMajor(_q/60))
+    mnr.append(controlLoop.computeTotalMinor(_q/60))
+
+mjr = np.array(mjr)
+mnr = np.array(mnr)
 
 print(k)
 
-plt.plot(q, mjr, label="Major Losses")
+plt.plot(q, mjr, label="Major Losses", color="blue")
+plt.plot(q, mnr, label="Minor Losses", color="red")
+plt.plot(q, mjr + mnr, label="Total", color="green")
 plt.title("Heat Exchanger System Operating Point")
-plt.xlabel(r"Flow Rate ($m^3/min$)")
+plt.xlabel(r"Flow Rate ($m^3min^{-1}$)")
 plt.ylabel("Head Loss (m)")
+plt.legend()
 plt.show()
