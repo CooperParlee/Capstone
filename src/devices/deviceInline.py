@@ -35,7 +35,11 @@ class DeviceInline(Device):
         if (outlet == -1):
             outlet = manager.addNode()
         self.inlet_node = inlet
+        # Tells the node on the inlet to this device that this device is the outlet of the node.
+        inlet.attachOutlet(self)
         self.outlet_node = outlet
+        # Tells the node on the outlet of this device that this device is the inlet of the node.
+        outlet.attachInlet(self)
         if (diameter == -1):
             self.diameter = manager.getDefaultDiameter()
         else:

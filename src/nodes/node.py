@@ -54,9 +54,19 @@ class Node:
         return self.timeSinceStart
         
     def attachInlet(self, inletDevice):
+        """Sets the device that is attached to the inlet of the node.
+
+        Args:
+            inletDevice (Device): the new inlet device to the node.
+        """
         self.inlet_attached = inletDevice
     
     def attachOutlet(self, outletDevice):
+        """Sets the device that is attached to the outlet of the node.
+
+        Args:
+            outletDevice (Device): the new outlet device of the node.
+        """
         self.outlet_attached = outletDevice
     
     def getOutletDevice(self):
