@@ -19,6 +19,9 @@ class DeviceParallel (Device):
         self.temp = self.attached_node.getTemperature()
         self.pressure = self.attached_node.getPressure()
         self.flow = self.attached_node.getFlowRate()
+        
+    def getInlet(self):
+        return self.attached_node
 
 
     

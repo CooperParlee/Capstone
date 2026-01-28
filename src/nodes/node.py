@@ -64,3 +64,6 @@ class Node:
 
     def getInletDevice(self):
         return self.inlet_attached
+
+    def getId(self):
+        return self.id

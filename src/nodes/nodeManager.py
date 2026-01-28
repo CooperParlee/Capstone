@@ -9,6 +9,7 @@ from src.nodes.node import Node
 from src.devices import Device
 from src.devices import DevicePipe
 from src.devices import DeviceInline
+from src.devices import DeviceParallel
 from warnings import warn
 
 class NodeManager:
@@ -44,6 +45,9 @@ class NodeManager:
         
         self.nodes.append(node)
 
+    def getNodes(self):
+        return self.nodes
+
     def update(self):
         for node in self.nodes:
             node.update()
@@ -57,15 +61,31 @@ class ControlLoop:
         self.k = -1
         self.devices = []
         self.pipes = []
+        self.nodes = {}
 
+    def addNode(self, node):
+        id = node.getId()
+
+        if (id not in self.nodes):
+            self.nodes[id] = node
+        else:
+            print(f"Oh shiii, {id} is already in my nodes")
     def addDevice (self, device):
         if (isinstance(device, Device)):
             if (self.devices is None):
-                self.devices = [Device]
+                self.devices = [Device]          
             else:
                 self.devices.append(device)
+            
             if (isinstance(device, DevicePipe)):
                 self.pipes.append(device)
+            # Add nodes contained within the device to the existing list of nodes based upon id
+
+            if (isinstance(device, DeviceInline)):
+                self.addNode(device.getInlet())
+                self.addNode(device.getOutlet())
+            if (isinstance(device, DeviceParallel)):
+                self.addNode(device.getInlet())
         else:
             warn(f"{device} is not an instance of Device; ignoring.")
     def addDevices(self, devices):
