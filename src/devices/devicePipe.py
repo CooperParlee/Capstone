@@ -19,7 +19,7 @@ class DevicePipe(DeviceInline):
     length: float = -1.0
     roughness: float = 0.0 
 
-    def __init__ (self, manager : 'NodeManager', inlet_node : Node, outlet_node : Node, roughness=0, length=0, diameter=0, density=999, viscosity=1.02E-3):
+    def __init__ (self, manager : 'NodeManager', inlet_node : Node, outlet_node : Node, roughness=0, length=0, diameter=0, density=999, viscosity=1.02E-3, k = 0):
         """Initialize a pipe object with given inlet and outlet nodes and optional roughness, length and diameter values.
 
         Args:
@@ -37,7 +37,7 @@ class DevicePipe(DeviceInline):
         self.diameter = diameter
         self.density = density
         self.viscosity = viscosity
-        super().__init__(manager, inlet_node, outlet_node, diameter=diameter)
+        super().__init__(manager, inlet_node, outlet_node, diameter=diameter, k=k)
 
     def setRoughness(self, roughness):
         """Set the pipe roughness.
