@@ -10,7 +10,10 @@ from src.devices import Device
 from src.devices import DevicePipe
 from src.devices import DeviceInline
 from src.devices import DeviceParallel
+from src.devices import DevicePump
+
 from warnings import warn
+from scipy import optimize as opt
 
 class NodeManager:
     # Default unit values
@@ -44,9 +47,16 @@ class NodeManager:
             self.nodes[0] = node
         
         self.nodes.append(node)
+        return node
 
     def getNodes(self):
         return self.nodes
+
+    def getNode (self, id):
+        if (self.nodes[id]):
+            return self.nodes[id]
+        else: 
+            return None
 
     def update(self):
         for node in self.nodes:
@@ -62,6 +72,7 @@ class ControlLoop:
         self.devices = []
         self.pipes = []
         self.nodes = {}
+        self.pumps = []
 
     def addNode(self, node):
         id = node.getId()
@@ -79,13 +90,17 @@ class ControlLoop:
             
             if (isinstance(device, DevicePipe)):
                 self.pipes.append(device)
+
+            if (isinstance(device, DevicePump)):
+                self.pumps.append(device)
             # Add nodes contained within the device to the existing list of nodes based upon id
 
-            if (isinstance(device, DeviceInline)):
-                self.addNode(device.getInlet())
-                self.addNode(device.getOutlet())
-            if (isinstance(device, DeviceParallel)):
-                self.addNode(device.getInlet())
+            # Todo: validate and remove this
+            # if (isinstance(device, DeviceInline)):
+            #     self.addNode(device.getInlet())
+            #     self.addNode(device.getOutlet())
+            # if (isinstance(device, DeviceParallel)):
+            #     self.addNode(device.getInlet())
         else:
             warn(f"{device} is not an instance of Device; ignoring.")
     def addDevices(self, devices):
@@ -158,3 +173,14 @@ class ControlLoop:
                 print(f"device was not an inline device {type(device)}")
         
         return headLoss
+    
+    def totalPumpCurve (self, q):
+        return (sum(pump.getCurve()(q) for pump in self.pumps)
+        - self.computeTotalMinor(q) - self.computeTotalMajor(q))
+
+    def computeOpPoint (self): 
+        soln = opt.root_scalar(lambda q: self.totalPumpCurve(q) - self.computeTotalMinor(q) - self.computeTotalMajor(q), 
+        method="brentq", bracket=[0, 15/60])
+        return soln.root, self.totalPumpCurve(soln.root)
+        
+        
