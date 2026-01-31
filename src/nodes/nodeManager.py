@@ -14,6 +14,7 @@ from src.devices import DevicePump
 
 from warnings import warn
 from scipy import optimize as opt
+from time import time
 
 class NodeManager:
     # Default unit values
@@ -175,12 +176,18 @@ class ControlLoop:
         return headLoss
     
     def totalPumpCurve (self, q):
-        return (sum(pump.getCurve()(q) for pump in self.pumps)
-        - self.computeTotalMinor(q) - self.computeTotalMajor(q))
+        return (sum(pump.getPumpCurve()(q) for pump in self.pumps))
+
+    def equation (self, q):
+        error = self.computeTotalMinor(q) + self.computeTotalMajor(q) - self.totalPumpCurve(q)
+        #print(f"q: {q * 60} Minor: {self.computeTotalMinor(q)} Major: {self.computeTotalMajor(q)} Pump: {self.totalPumpCurve(q)} Error: {error}")
+        return error
 
     def computeOpPoint (self): 
-        soln = opt.root_scalar(lambda q: self.totalPumpCurve(q) - self.computeTotalMinor(q) - self.computeTotalMajor(q), 
-        method="brentq", bracket=[0, 15/60])
-        return soln.root, self.totalPumpCurve(soln.root)
+        start = time()
+        soln = opt.root_scalar(self.equation, 
+        method="bisect", bracket=[0, 0.25/60])
+        print(f"Delta: {time() - start}")
+        return soln.root*60, self.totalPumpCurve(soln.root)
         
         

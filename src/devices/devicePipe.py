@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 from math import pi
 from numpy import log10
+import numpy as np
 
 class DevicePipe(DeviceInline):
     diameter: float = -1.0
@@ -91,8 +92,10 @@ class DevicePipe(DeviceInline):
 
         # Compute friction factor in that pipe (Swamee-Jain)
 
-        print(f"Diameter: {self.diameter} Re: {Re}")
-        f = 0.25 / (log10(self.roughness/(3.7*self.diameter) + 5.74/Re**0.9))**2
+        #print(f"Diameter: {self.diameter} Velocity: {v} Re: {Re}")
+        if(Re == 0):
+            f = 0.25 / np.pow(log10(self.roughness/(3.7*self.diameter)), 2)
+        f = 0.25 / np.pow(log10(self.roughness/(3.7*self.diameter) + 5.74/np.pow(Re, 0.9)), 2)
 
         # Darcy-Weisbach
         h_friction = f * (self.length/self.diameter) * (v**2/(2*g))

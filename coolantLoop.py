@@ -62,6 +62,10 @@ for _q in q:
 mjr = np.array(mjr)
 mnr = np.array(mnr)
 
+intersect = controlLoop.computeOpPoint()
+
+print(intersect)
+
 plt.figure()
 plt.plot(q, mjr, label="Major Losses", color="blue")
 plt.plot(q, mnr, label="Minor Losses", color="red")
