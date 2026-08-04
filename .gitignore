@@ -3,3 +3,5 @@ examples
 .vscode
 .ignore
 *.xlsx
+*.html
+README_files/

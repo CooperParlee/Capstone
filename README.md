@@ -16,7 +16,7 @@ This project began as a capstone at Maine Maritime Academy's Electronics and Ins
 ## How it works
 
 ### Node-based hydraulic graph
-The system is modeled as a graph of `Node` objects (pressure, temperature, flow rate) connected by `Device` objects (pumps, pipes, heat exchangers). Each device owns an inlet node and an outlet node; chaining devices together builds a piping loop. `NodeManager` creates and tracks every node in the system.
+The system is modeled as a graph of `Node` objects (pressure, temperature, flow rate) connected by `Device` objects (pumps, pipes, heat exchangers, sensors). These devices are broken into `DeviceInline` and `DeviceParallel`. The former owns an inlet node and an outlet node and chaining these devices together builds a piping loop. The parallel device class describes everything that doesn't have fluid flow travelling through it. This generally means most sensing elements like temperature and pressure sensors. `NodeManager` creates and tracks every node in the system.
 
 ### Devices
 All devices derive from a common `Device` base and fall into a few families:
@@ -58,9 +58,11 @@ tests/                 # Early prototypes and standalone Modbus server/client sc
 docs/                  # Original capstone proposal
 ```
 
-## Requirements
+## Setup/Install
 
-Python 3 with the packages in `requirements.txt`, notably `pymodbus`, `numpy`, `scipy`, `matplotlib`, `openpyxl`, and `PyQt6`/`pyqtgraph` (for exploratory plotting/GUI work).
+It is recommended that you follow best practices and run ReactorOnChip within a virtual environment. I use [venv](https://docs.python.org/3/library/venv.html). After following the instructions included in the venv documentation to create and activate your virtual environment, you will need to install the required packages included in `requirements.txt`, notably `pymodbus`, `numpy`, `scipy`, `matplotlib`, `openpyxl`, and `PyQt6`/`pyqtgraph` (for exploratory plotting/GUI work).
+
+Within the activated virtual environment, the following can be run to install all of the requisite packages:
 
 ```bash
 pip install -r requirements.txt
