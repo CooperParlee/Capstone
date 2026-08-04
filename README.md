@@ -26,8 +26,12 @@ All devices derive from a common `Device` base and fall into a few families:
 - **`DevicePlateHX`** / **`special_DeviceInternalEngineHX`** — heat exchangers with thermal mass; the "internal engine" variant also injects heat proportional to a simulated engine load.
 - **`DeviceParallel`** and its subclasses (**`DevicePressureSensor`**, **`DeviceTempSensor`**, **`DeviceSpeedSensor`**) — read-only taps that report a node's (or pump's) current state with configurable scaling and random noise via `DeviceSensorBase`.
 
+![A org chart showing inheritance of all of the basic devices](https://github.com/CooperParlee/ReactorOnChip/blob/main/docs/img/orgchart.png?raw=true)
+
 ### Solving the operating point
 `ControlLoop` aggregates all devices in a loop and solves for the actual operating flow rate: it finds the flow where total major + minor head losses equal the combined pump curve output, using `scipy.optimize.root_scalar` (Brent's method). Once the flow is known, `computeDeltas()` walks the loop from a reference node, applying each device's pressure drop/rise in sequence to update every node's pressure.
+
+![Pump and system curve operating points](https://github.com/CooperParlee/ReactorOnChip/blob/main/docs/img/oppoint.png?raw=true)
 
 ### Thermal model and fluid transport
 Heat exchanger devices carry thermal mass properties (conductivity, area, specific heat, characteristic length) and compute conduction/convection heat flow against the fluid. Rather than assuming instant mixing, `FluidParcelManager` discretizes the loop's fluid volume into a configurable number of parcels that are advected through devices based on local flow velocity, exchanging heat with whatever thermal device they currently occupy. This gives the simulation realistic transport lag as temperature fronts move around the loop.
@@ -60,7 +64,7 @@ docs/                  # Original capstone proposal
 
 ## Setup/Install
 
-It is recommended that you follow best practices and run ReactorOnChip within a virtual environment. I use [venv](https://docs.python.org/3/library/venv.html). After following the instructions included in the venv documentation to create and activate your virtual environment, you will need to install the required packages included in `requirements.txt`, notably `pymodbus`, `numpy`, `scipy`, `matplotlib`, `openpyxl`, and `PyQt6`/`pyqtgraph` (for exploratory plotting/GUI work).
+It is recommended that you follow Python package best practices and run ReactorOnChip within a virtual environment. I use [venv](https://docs.python.org/3/library/venv.html). After following the instructions included in the venv documentation to create and activate your virtual environment, you will need to install the required packages included in `requirements.txt`, notably `pymodbus`, `numpy`, `scipy`, `matplotlib`, `openpyxl`, and `PyQt6`/`pyqtgraph` (for exploratory plotting/GUI work).
 
 Within the activated virtual environment, the following can be run to install all of the requisite packages:
 
